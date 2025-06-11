@@ -23,6 +23,7 @@ using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using JetBrains.Annotations;
 using Net.Pkcs11Interop.Common;
 using Net.Pkcs11Interop.HighLevelAPI;
 
@@ -36,7 +37,7 @@ namespace Net.Pkcs11Interop.X509Store
         /// <summary>
         /// Internal context for Pkcs11X509Certificate2 class
         /// </summary>
-        private Pkcs11X509CertificateContext _certContext = null;
+        private readonly Pkcs11X509CertificateContext _certContext;
 
         /// <summary>
         /// Creates new instance of Pkcs11ECDsaProvider class
@@ -54,7 +55,7 @@ namespace Net.Pkcs11Interop.X509Store
         /// </summary>
         /// <param name="hash">The hash value of the data that is being signed</param>
         /// <returns>A digital signature that consists of the given hash value encrypted with the private key</returns>
-        public override byte[] SignHash(byte[] hash)
+        public override byte[] SignHash([NotNull] byte[] hash)
         {
             if (hash == null || hash.Length == 0)
                 throw new ArgumentNullException(nameof(hash));
@@ -78,7 +79,7 @@ namespace Net.Pkcs11Interop.X509Store
         /// <param name="hash">The hash value of a block of data</param>
         /// <param name="signature">The digital signature to be verified</param>
         /// <returns>True if the hash value equals the decrypted signature, false otherwise</returns>
-        public override bool VerifyHash(byte[] hash, byte[] signature)
+        public override bool VerifyHash([NotNull] byte[] hash, [NotNull] byte[] signature)
         {
             if (hash == null || hash.Length == 0)
                 throw new ArgumentNullException(nameof(hash));
@@ -105,7 +106,7 @@ namespace Net.Pkcs11Interop.X509Store
         /// <param name="count">The number of bytes to hash</param>
         /// <param name="hashAlgorithm">The algorithm to use in hash the data</param>
         /// <returns>The hashed data</returns>
-        protected override byte[] HashData(byte[] data, int offset, int count, HashAlgorithmName hashAlgorithm)
+        protected override byte[] HashData([NotNull] byte[] data, int offset, int count, HashAlgorithmName hashAlgorithm)
         {
             if (data == null || data.Length == 0)
                 throw new ArgumentNullException(nameof(data));
@@ -116,10 +117,7 @@ namespace Net.Pkcs11Interop.X509Store
             if (count < 1 || (offset + count) > data.Length)
                 throw new ArgumentException($"Invalid value of {nameof(count)} parameter");
 
-            if (hashAlgorithm == null)
-                throw new ArgumentNullException(nameof(hashAlgorithm));
-
-            using (var hashAlg = HashAlgorithm.Create(hashAlgorithm.Name))
+            using (var hashAlg = HashAlgorithmUtils.CreateHashAlgorithm(hashAlgorithm))
             {
                 return hashAlg.ComputeHash(data, offset, count);
             }
@@ -131,15 +129,12 @@ namespace Net.Pkcs11Interop.X509Store
         /// <param name="data">The binary stream to hash</param>
         /// <param name="hashAlgorithm">The hash algorithm</param>
         /// <returns>The hashed data</returns>
-        protected override byte[] HashData(Stream data, HashAlgorithmName hashAlgorithm)
+        protected override byte[] HashData([NotNull] Stream data, HashAlgorithmName hashAlgorithm)
         {
             if (data == null) // Note: data.Length might throw NotSupportedException
                 throw new ArgumentNullException(nameof(data));
 
-            if (hashAlgorithm == null)
-                throw new ArgumentNullException(nameof(hashAlgorithm));
-
-            using (var hashAlg = HashAlgorithm.Create(hashAlgorithm.Name))
+            using (var hashAlg = HashAlgorithmUtils.CreateHashAlgorithm(hashAlgorithm))
             {
                 return hashAlg.ComputeHash(data);
             }

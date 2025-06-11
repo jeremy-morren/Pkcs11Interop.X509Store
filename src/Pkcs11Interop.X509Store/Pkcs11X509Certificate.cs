@@ -22,6 +22,7 @@
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
+using JetBrains.Annotations;
 using Net.Pkcs11Interop.Common;
 using Net.Pkcs11Interop.HighLevelAPI;
 
@@ -35,40 +36,22 @@ namespace Net.Pkcs11Interop.X509Store
         /// <summary>
         /// Internal context for Pkcs11X509Certificate2 class
         /// </summary>
-        private Pkcs11X509CertificateContext _certContext = null;
+        private readonly Pkcs11X509CertificateContext _certContext = null;
 
         /// <summary>
         /// Detailed information about X.509 certificate stored on PKCS#11 token
         /// </summary>
-        public Pkcs11X509CertificateInfo Info
-        {
-            get
-            {
-                return _certContext.CertificateInfo;
-            }
-        }
+        public Pkcs11X509CertificateInfo Info => _certContext.CertificateInfo;
 
         /// <summary>
         /// Flag indicating whether private key object corresponding to certificate object was found on token
         /// </summary>
-        public bool HasPrivateKeyObject
-        {
-            get
-            {
-                return (_certContext.PrivKeyHandle != null);
-            }
-        }
+        public bool HasPrivateKeyObject => (_certContext.PrivKeyHandle != null);
 
         /// <summary>
         /// Flag indicating whether public key object corresponding to certificate object was found on token
         /// </summary>
-        public bool HasPublicKeyObject
-        {
-            get
-            {
-                return (_certContext.PubKeyHandle != null);
-            }
-        }
+        public bool HasPublicKeyObject => (_certContext.PubKeyHandle != null);
 
         /// <summary>
         /// Creates new instance of Pkcs11X509Certificate2 class
@@ -164,6 +147,7 @@ namespace Net.Pkcs11Interop.X509Store
         /// Gets the System.Security.Cryptography.RSA implementation for private key
         /// </summary>
         /// <returns>System.Security.Cryptography.RSA implementation for private key or null if RSA private key is not present on token</returns>
+        [CanBeNull]
         public RSA GetRSAPrivateKey()
         {
             if (_certContext.CertificateInfo.KeyType != AsymmetricKeyType.RSA || !this.HasPrivateKeyObject)
@@ -176,6 +160,7 @@ namespace Net.Pkcs11Interop.X509Store
         /// Gets the System.Security.Cryptography.RSA implementation for public key
         /// </summary>
         /// <returns>System.Security.Cryptography.RSA implementation for public key or null if RSA public key is not present on token</returns>
+        [CanBeNull]
         public RSA GetRSAPublicKey()
         {
             if (_certContext.CertificateInfo.KeyType != AsymmetricKeyType.RSA || !this.HasPublicKeyObject)
@@ -188,6 +173,7 @@ namespace Net.Pkcs11Interop.X509Store
         /// Gets the System.Security.Cryptography.ECDsa implementation for private key
         /// </summary>
         /// <returns>System.Security.Cryptography.ECDsa implementation for private key or null if ECDsa private key is not present on token</returns>
+        [CanBeNull]
         public ECDsa GetECDsaPrivateKey()
         {
             if (_certContext.CertificateInfo.KeyType != AsymmetricKeyType.EC || !this.HasPrivateKeyObject)
@@ -200,6 +186,7 @@ namespace Net.Pkcs11Interop.X509Store
         /// Gets the System.Security.Cryptography.ECDsa implementation for public key
         /// </summary>
         /// <returns>System.Security.Cryptography.ECDsa implementation for public key or null if ECDsa public key is not present on token</returns>
+        [CanBeNull]
         public ECDsa GetECDsaPublicKey()
         {
             if (_certContext.CertificateInfo.KeyType != AsymmetricKeyType.EC || !this.HasPublicKeyObject)
@@ -211,7 +198,10 @@ namespace Net.Pkcs11Interop.X509Store
         /// <summary>
         /// Gets the System.Security.Cryptography.AsymmetricAlgorithm implementation for private key
         /// </summary>
-        /// <returns>System.Security.Cryptography.AsymmetricAlgorithm implementation for private key or null if private key is not present on token</returns>
+        /// <returns>
+        /// System.Security.Cryptography.AsymmetricAlgorithm implementation for private key or null if private key is not present on token
+        /// </returns>
+        [CanBeNull]
         public AsymmetricAlgorithm GetPrivateKey()
         {
             switch (_certContext.CertificateInfo.KeyType)
@@ -229,6 +219,7 @@ namespace Net.Pkcs11Interop.X509Store
         /// Gets the System.Security.Cryptography.AsymmetricAlgorithm implementation for public key
         /// </summary>
         /// <returns>System.Security.Cryptography.AsymmetricAlgorithm implementation for public key or null if public key is not present on token</returns>
+        [CanBeNull]
         public AsymmetricAlgorithm GetPublicKey()
         {
             switch (_certContext.CertificateInfo.KeyType)

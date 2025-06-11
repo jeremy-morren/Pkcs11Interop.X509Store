@@ -21,6 +21,7 @@
 
 using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using Net.Pkcs11Interop.Common;
 using Net.Pkcs11Interop.HighLevelAPI;
 
@@ -44,6 +45,7 @@ namespace Net.Pkcs11Interop.X509Store
         /// <summary>
         /// Detailed information about PKCS#11 based X.509 store
         /// </summary>
+        [NotNull]
         public Pkcs11X509StoreInfo Info
         {
             get
@@ -63,6 +65,7 @@ namespace Net.Pkcs11Interop.X509Store
         /// <summary>
         /// List of available PKCS#11 slots representing logical readers
         /// </summary>
+        [NotNull]
         public List<Pkcs11Slot> Slots
         {
             get
@@ -80,7 +83,7 @@ namespace Net.Pkcs11Interop.X509Store
         /// </summary>
         /// <param name="libraryPath">Name of or path to PKCS#11 library</param>
         /// <param name="pinProvider">Provider of PIN codes for PKCS#11 tokens and keys</param>
-        public Pkcs11X509Store(string libraryPath, IPinProvider pinProvider)
+        public Pkcs11X509Store([NotNull] string libraryPath, [NotNull] IPinProvider pinProvider)
         {
             if (string.IsNullOrEmpty(libraryPath))
                 throw new ArgumentNullException(nameof(libraryPath));
@@ -172,6 +175,7 @@ namespace Net.Pkcs11Interop.X509Store
                                 _slots[i] = null;
                             }
                         }
+                        _slots = null;
                     }
 
                     if (_storeContext != null)

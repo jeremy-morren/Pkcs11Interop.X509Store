@@ -20,6 +20,7 @@
  */
 
 using System;
+using JetBrains.Annotations;
 
 namespace Net.Pkcs11Interop.X509Store
 {
@@ -31,49 +32,27 @@ namespace Net.Pkcs11Interop.X509Store
         /// <summary>
         /// Flag indicating whether login should be cancelled
         /// </summary>
-        private bool _cancel = false;
-
-        /// <summary>
-        /// Flag indicating whether login should be cancelled
-        /// </summary>
-        public bool Cancel
-        {
-            get
-            {
-                return _cancel;
-            }
-        }
+        public bool Cancel { get; }
 
         /// <summary>
         /// Value of PIN that should be used for the login.
         /// Null value indicates that login should be performed using protected authentication path (e.g. pin pad).
         /// </summary>
-        private byte[] _pin = null;
-
-        /// <summary>
-        /// Value of PIN that should be used for the login.
-        /// Null value indicates that login should be performed using protected authentication path (e.g. pin pad).
-        /// </summary>
-        public byte[] Pin
-        {
-            get
-            {
-                return _pin;
-            }
-        }
+        [CanBeNull]
+        public byte[] Pin { get; }
 
         /// <summary>
         /// Creates new instance of GetPinResult class
         /// </summary>
         /// <param name="cancel">Flag indicating whether login should be cancelled</param>
         /// <param name="pin">Value of PIN that should be used for the login. Null value indicates that login should be performed using protected authentication path (e.g. pin pad).</param>
-        public GetPinResult(bool cancel, byte[] pin)
+        public GetPinResult(bool cancel, [CanBeNull] byte[] pin)
         {
             if (cancel && pin != null)
                 throw new ArgumentException("PIN value provided along with the request to cancel login");
 
-            _cancel = cancel;
-            _pin = pin;
+            Cancel = cancel;
+            Pin = pin;
         }
     }
 }

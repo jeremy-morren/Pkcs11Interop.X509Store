@@ -20,6 +20,7 @@
  */
 
 using System;
+using JetBrains.Annotations;
 using Net.Pkcs11Interop.Common;
 using Net.Pkcs11Interop.HighLevelAPI;
 
@@ -54,14 +55,13 @@ namespace Net.Pkcs11Interop.X509Store
             }
         }
 
-        /// <summary>
-        /// PKCS#11 token (cryptographic device) that is typically present in the slot
-        /// </summary>
+        /// <inheritdoc cref="Token"/>
         private Pkcs11Token _token = null;
 
         /// <summary>
-        /// PKCS#11 token (cryptographic device) that is typically present in the slot
+        /// PKCS#11 token (cryptographic device) that is typically present in the slot, or null if no token is present in the slot
         /// </summary>
+        [CanBeNull]
         public Pkcs11Token Token
         {
             get

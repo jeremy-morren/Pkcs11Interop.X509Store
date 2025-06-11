@@ -34,9 +34,7 @@ namespace Net.Pkcs11Interop.X509Store
         /// </summary>
         private bool _disposed = false;
 
-        /// <summary>
-        /// High level PKCS#11 wrapper
-        /// </summary>
+        /// <inheritdoc cref="Pkcs11Library"/>
         private IPkcs11Library _pkcs11Library = null;
 
         /// <summary>
@@ -53,10 +51,8 @@ namespace Net.Pkcs11Interop.X509Store
             }
         }
 
-        /// <summary>
-        /// Detailed information about PKCS#11 based X.509 store
-        /// </summary>
-        private Pkcs11X509StoreInfo _storeInfo = null;
+        /// <inheritdoc cref="StoreInfo"/>
+        private readonly Pkcs11X509StoreInfo _storeInfo = null;
 
         /// <summary>
         /// Detailed information about PKCS#11 based X.509 store
@@ -72,10 +68,8 @@ namespace Net.Pkcs11Interop.X509Store
             }
         }
 
-        /// <summary>
-        /// Provider of PIN codes for PKCS#11 tokens and keys
-        /// </summary>
-        private IPinProvider _pinProvider = null;
+        /// <inheritdoc cref="PinProvider"/>
+        private readonly IPinProvider _pinProvider = null;
 
         /// <summary>
         /// Provider of PIN codes for PKCS#11 tokens and keys

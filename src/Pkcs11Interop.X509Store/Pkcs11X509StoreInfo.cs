@@ -32,50 +32,22 @@ namespace Net.Pkcs11Interop.X509Store
         /// <summary>
         /// Name of or path to PKCS#11 library
         /// </summary>
-        private string _libraryPath = null;
+        public string LibraryPath { get; }
 
         /// <summary>
-        /// Name of or path to PKCS#11 library
+        /// PKCS#11 library version
         /// </summary>
-        public string LibraryPath
-        {
-            get
-            {
-                return _libraryPath;
-            }
-        }
+        public string LibraryVersion { get; }
 
         /// <summary>
         /// Manufacturer of PKCS#11 library
         /// </summary>
-        private string _manufacturer = null;
-
-        /// <summary>
-        /// Manufacturer of PKCS#11 library
-        /// </summary>
-        public string Manufacturer
-        {
-            get
-            {
-                return _manufacturer;
-            }
-        }
+        public string Manufacturer { get; }
 
         /// <summary>
         /// Description of PKCS#11 library
         /// </summary>
-        private string _description = null;
-
-        /// <summary>
-        /// Description of PKCS#11 library
-        /// </summary>
-        public string Description
-        {
-            get
-            {
-                return _description;
-            }
-        }
+        public string Description { get; }
 
         /// <summary>
         /// Creates new instance of Pkcs11X509StoreInfo class
@@ -90,9 +62,10 @@ namespace Net.Pkcs11Interop.X509Store
             if (libraryInfo == null)
                 throw new ArgumentNullException(nameof(libraryInfo));
 
-            _libraryPath = libraryPath;
-            _manufacturer = libraryInfo.ManufacturerId;
-            _description = libraryInfo.LibraryDescription;
+            LibraryPath = libraryPath;
+            LibraryVersion = libraryInfo.LibraryVersion;
+            Manufacturer = libraryInfo.ManufacturerId;
+            Description = libraryInfo.LibraryDescription;
         }
     }
 }

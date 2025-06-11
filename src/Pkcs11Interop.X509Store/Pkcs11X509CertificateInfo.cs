@@ -33,82 +33,27 @@ namespace Net.Pkcs11Interop.X509Store
         /// <summary>
         /// Hex encoded identifier of PKCS#11 certificate object (value of CKA_ID attribute)
         /// </summary>
-        private string _id = null;
-
-        /// <summary>
-        /// Hex encoded identifier of PKCS#11 certificate object (value of CKA_ID attribute)
-        /// </summary>
-        public string Id
-        {
-            get
-            {
-                return _id;
-            }
-        }
+        public string Id { get; }
 
         /// <summary>
         /// Label of PKCS#11 certificate object (value of CKA_LABEL attribute)
         /// </summary>
-        private string _label = null;
-
-        /// <summary>
-        /// Label of PKCS#11 certificate object (value of CKA_LABEL attribute)
-        /// </summary>
-        public string Label
-        {
-            get
-            {
-                return _label;
-            }
-        }
+        public string Label { get; }
 
         /// <summary>
         /// DER encoded value of X.509 certificate (value of CKA_VALUE attribute)
         /// </summary>
-        private byte[] _rawData = null;
-
-        /// <summary>
-        /// DER encoded value of X.509 certificate (value of CKA_VALUE attribute)
-        /// </summary>
-        public byte[] RawData
-        {
-            get
-            {
-                return _rawData;
-            }
-        }
+        public byte[] RawData { get; }
 
         /// <summary>
         /// X.509 certificate parsed as System.Security.Cryptography.X509Certificates.X509Certificate2 instance for convenience
         /// </summary>
-        private X509Certificate2 _parsedCertificate = null;
-
-        /// <summary>
-        /// X.509 certificate parsed as System.Security.Cryptography.X509Certificates.X509Certificate2 instance for convenience
-        /// </summary>
-        public X509Certificate2 ParsedCertificate
-        {
-            get
-            {
-                return _parsedCertificate;
-            }
-        }
+        public X509Certificate2 ParsedCertificate { get; }
 
         /// <summary>
         /// Type of certified asymmetric key
         /// </summary>
-        private AsymmetricKeyType _keyType = AsymmetricKeyType.Other;
-
-        /// <summary>
-        /// Type of certified asymmetric key
-        /// </summary>
-        public AsymmetricKeyType KeyType
-        {
-            get
-            {
-                return _keyType;
-            }
-        }
+        public AsymmetricKeyType KeyType { get; }
 
         /// <summary>
         /// Creates new instance of Pkcs11X509CertificateInfo class
@@ -118,17 +63,23 @@ namespace Net.Pkcs11Interop.X509Store
         /// <param name="ckaValue">Value of CKA_VALUE attribute</param>
         internal Pkcs11X509CertificateInfo(byte[] ckaId, string ckaLabel, byte[] ckaValue)
         {
-            _id = ConvertUtils.BytesToHexString(ckaId);
-            _label = ckaLabel;
-            _rawData = ckaValue ?? throw new ArgumentNullException(nameof(ckaValue));
-            _parsedCertificate = new X509Certificate2(_rawData);
+            Id = ConvertUtils.BytesToHexString(ckaId);
+            Label = ckaLabel;
+            RawData = ckaValue ?? throw new ArgumentNullException(nameof(ckaValue));
+            ParsedCertificate = new X509Certificate2(RawData);
 
-            if (_parsedCertificate.PublicKey.Oid.Value == "1.2.840.113549.1.1.1")
-                _keyType = AsymmetricKeyType.RSA;
-            else if (_parsedCertificate.PublicKey.Oid.Value == "1.2.840.10045.2.1")
-                _keyType = AsymmetricKeyType.EC;
-            else
-                _keyType = AsymmetricKeyType.Other;
+            switch (ParsedCertificate.PublicKey.Oid.Value)
+            {
+                case "1.2.840.113549.1.1.1":
+                    KeyType = AsymmetricKeyType.RSA;
+                    break;
+                case "1.2.840.10045.2.1":
+                    KeyType = AsymmetricKeyType.EC;
+                    break;
+                default:
+                    KeyType = AsymmetricKeyType.Other;
+                    break;
+            }
         }
     }
 }
