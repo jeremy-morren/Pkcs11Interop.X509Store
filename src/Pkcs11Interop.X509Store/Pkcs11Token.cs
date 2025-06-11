@@ -21,6 +21,7 @@
 
 using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using Net.Pkcs11Interop.Common;
 using Net.Pkcs11Interop.HighLevelAPI;
 
@@ -29,6 +30,7 @@ namespace Net.Pkcs11Interop.X509Store
     /// <summary>
     /// PKCS#11 token (cryptographic device) that is typically present in the slot
     /// </summary>
+    [PublicAPI]
     public class Pkcs11Token : IDisposable
     {
         /// <summary>
@@ -87,7 +89,7 @@ namespace Net.Pkcs11Interop.X509Store
             if (slotContext == null)
                 throw new ArgumentNullException(nameof(slotContext));
 
-            _tokenContext = this.GetTokenContext(slotContext);
+            _tokenContext = GetTokenContext(slotContext);
             // Note: _certificates are loaded on first access
         }
 
@@ -108,7 +110,7 @@ namespace Net.Pkcs11Interop.X509Store
         /// </summary>
         /// <param name="slotContext">Internal context for Pkcs11Slot class</param>
         /// <returns>Internal context for Pkcs11Token class</returns>
-        private Pkcs11TokenContext GetTokenContext(Pkcs11SlotContext slotContext)
+        private static Pkcs11TokenContext GetTokenContext(Pkcs11SlotContext slotContext)
         {
             var tokenInfo = new Pkcs11TokenInfo(slotContext.Slot.GetTokenInfo());
             ISession masterSession = (!tokenInfo.Initialized) ? null : slotContext.Slot.OpenSession(SessionType.ReadOnly);

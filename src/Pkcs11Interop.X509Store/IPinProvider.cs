@@ -19,6 +19,8 @@
  *  Jaroslav IMRICH <jimrich@jimrich.sk>
  */
 
+using JetBrains.Annotations;
+
 namespace Net.Pkcs11Interop.X509Store
 {
     /// <summary>
@@ -33,7 +35,7 @@ namespace Net.Pkcs11Interop.X509Store
         /// <param name="slotInfo">Detailed information about PKCS#11 slot representing a logical reader that potentially contains a token</param>
         /// <param name="tokenInfo">Detailed information about PKCS#11 token (cryptographic device) that is typically present in the slot</param>
         /// <returns>Result for PIN request with instructions on how to perform login</returns>
-        GetPinResult GetTokenPin(Pkcs11X509StoreInfo storeInfo, Pkcs11SlotInfo slotInfo, Pkcs11TokenInfo tokenInfo);
+        [NotNull] GetPinResult GetTokenPin(Pkcs11X509StoreInfo storeInfo, Pkcs11SlotInfo slotInfo, Pkcs11TokenInfo tokenInfo);
 
         /// <summary>
         /// Requests PIN code for private key stored on PKCS#11 token
@@ -43,6 +45,6 @@ namespace Net.Pkcs11Interop.X509Store
         /// <param name="tokenInfo">Detailed information about PKCS#11 token (cryptographic device) that is typically present in the slot</param>
         /// <param name="certificateInfo">Detailed information about X.509 certificate stored on PKCS#11 token</param>
         /// <returns>Result for PIN request with instructions on how to perform login</returns>
-        GetPinResult GetKeyPin(Pkcs11X509StoreInfo storeInfo, Pkcs11SlotInfo slotInfo, Pkcs11TokenInfo tokenInfo, Pkcs11X509CertificateInfo certificateInfo);
+        [NotNull] GetPinResult GetKeyPin(Pkcs11X509StoreInfo storeInfo, Pkcs11SlotInfo slotInfo, Pkcs11TokenInfo tokenInfo, Pkcs11X509CertificateInfo certificateInfo);
     }
 }

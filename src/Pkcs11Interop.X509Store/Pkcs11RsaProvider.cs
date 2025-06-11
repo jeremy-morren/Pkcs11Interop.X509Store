@@ -23,6 +23,7 @@ using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using JetBrains.Annotations;
 using Net.Pkcs11Interop.Common;
 using Net.Pkcs11Interop.HighLevelAPI;
 using Net.Pkcs11Interop.HighLevelAPI.Factories;
@@ -38,7 +39,7 @@ namespace Net.Pkcs11Interop.X509Store
         /// <summary>
         /// Internal context for Pkcs11X509Certificate2 class
         /// </summary>
-        private Pkcs11X509CertificateContext _certContext = null;
+        private readonly Pkcs11X509CertificateContext _certContext;
 
         /// <summary>
         /// Creates new instance of Pkcs11RsaProvider class
@@ -58,13 +59,10 @@ namespace Net.Pkcs11Interop.X509Store
         /// <param name="hashAlgorithm">The hash algorithm used to create the hash value of the data</param>
         /// <param name="padding">The padding</param>
         /// <returns>The RSA signature for the specified hash value</returns>
-        public override byte[] SignHash(byte[] hash, HashAlgorithmName hashAlgorithm, RSASignaturePadding padding)
+        public override byte[] SignHash([NotNull] byte[] hash, HashAlgorithmName hashAlgorithm, [NotNull] RSASignaturePadding padding)
         {
             if (hash == null || hash.Length == 0)
                 throw new ArgumentNullException(nameof(hash));
-
-            if (hashAlgorithm == null)
-                throw new ArgumentNullException(nameof(hashAlgorithm));
 
             if (padding == null)
                 throw new ArgumentNullException(nameof(padding));
@@ -76,7 +74,7 @@ namespace Net.Pkcs11Interop.X509Store
             {
                 byte[] pkcs1DigestInfo = CreatePkcs1DigestInfo(hash, hashAlgorithm);
                 if (pkcs1DigestInfo == null)
-                    throw new NotSupportedException(string.Format("Algorithm {0} is not supported", hashAlgorithm.Name));
+                    throw new NotSupportedException($"Algorithm {hashAlgorithm.Name} is not supported");
 
                 using (ISession session = _certContext.TokenContext.SlotContext.Slot.OpenSession(SessionType.ReadOnly))
                 using (IMechanism mechanism = session.Factories.MechanismFactory.Create(CKM.CKM_RSA_PKCS))
@@ -93,7 +91,7 @@ namespace Net.Pkcs11Interop.X509Store
 
                 ICkRsaPkcsPssParams pssMechanismParams = CreateCkRsaPkcsPssParams(mechanismParamsFactory, hash, hashAlgorithm);
                 if (pssMechanismParams == null)
-                    throw new NotSupportedException(string.Format("Algorithm {0} is not supported", hashAlgorithm.Name));
+                    throw new NotSupportedException($"Algorithm {hashAlgorithm.Name} is not supported");
 
                 using (ISession session = _certContext.TokenContext.SlotContext.Slot.OpenSession(SessionType.ReadOnly))
                 using (IMechanism mechanism = session.Factories.MechanismFactory.Create(CKM.CKM_RSA_PKCS_PSS, pssMechanismParams))
@@ -106,7 +104,7 @@ namespace Net.Pkcs11Interop.X509Store
             }
             else
             {
-                throw new NotSupportedException(string.Format("Padding {0} is not supported", padding));
+                throw new NotSupportedException($"Padding {padding} is not supported");
             }
         }
 
@@ -118,16 +116,13 @@ namespace Net.Pkcs11Interop.X509Store
         /// <param name="hashAlgorithm">The hash algorithm used to create the hash value</param>
         /// <param name="padding">The padding mode</param>
         /// <returns>True if the signature is valid, false otherwise</returns>
-        public override bool VerifyHash(byte[] hash, byte[] signature, HashAlgorithmName hashAlgorithm, RSASignaturePadding padding)
+        public override bool VerifyHash([NotNull] byte[] hash, [NotNull] byte[] signature, HashAlgorithmName hashAlgorithm, [NotNull] RSASignaturePadding padding)
         {
             if (hash == null || hash.Length == 0)
                 throw new ArgumentNullException(nameof(hash));
 
             if (signature == null || signature.Length == 0)
                 throw new ArgumentNullException(nameof(signature));
-
-            if (hashAlgorithm == null)
-                throw new ArgumentNullException(nameof(hashAlgorithm));
 
             if (padding == null)
                 throw new ArgumentNullException(nameof(padding));
@@ -139,7 +134,7 @@ namespace Net.Pkcs11Interop.X509Store
             {
                 byte[] pkcs1DigestInfo = CreatePkcs1DigestInfo(hash, hashAlgorithm);
                 if (pkcs1DigestInfo == null)
-                    throw new NotSupportedException(string.Format("Algorithm {0} is not supported", hashAlgorithm));
+                    throw new NotSupportedException($"Algorithm {hashAlgorithm} is not supported");
 
                 using (ISession session = _certContext.TokenContext.SlotContext.Slot.OpenSession(SessionType.ReadOnly))
                 using (IMechanism mechanism = session.Factories.MechanismFactory.Create(CKM.CKM_RSA_PKCS))
@@ -154,7 +149,7 @@ namespace Net.Pkcs11Interop.X509Store
 
                 ICkRsaPkcsPssParams pssMechanismParams = CreateCkRsaPkcsPssParams(mechanismParamsFactory, hash, hashAlgorithm);
                 if (pssMechanismParams == null)
-                    throw new NotSupportedException(string.Format("Algorithm {0} is not supported", hashAlgorithm.Name));
+                    throw new NotSupportedException($"Algorithm {hashAlgorithm.Name} is not supported");
 
                 using (ISession session = _certContext.TokenContext.SlotContext.Slot.OpenSession(SessionType.ReadOnly))
                 using (IMechanism mechanism = session.Factories.MechanismFactory.Create(CKM.CKM_RSA_PKCS_PSS, pssMechanismParams))
@@ -165,7 +160,7 @@ namespace Net.Pkcs11Interop.X509Store
             }
             else
             {
-                throw new NotSupportedException(string.Format("Padding {0} is not supported", padding));
+                throw new NotSupportedException($"Padding {padding} is not supported");
             }
         }
 
@@ -175,7 +170,7 @@ namespace Net.Pkcs11Interop.X509Store
         /// <param name="data">The data to decrypt</param>
         /// <param name="padding">The padding mode</param>
         /// <returns>The decrypted data</returns>
-        public override byte[] Decrypt(byte[] data, RSAEncryptionPadding padding)
+        public override byte[] Decrypt([NotNull] byte[] data, [NotNull] RSAEncryptionPadding padding)
         {
             if (data == null || data.Length == 0)
                 throw new ArgumentNullException(nameof(data));
@@ -206,7 +201,7 @@ namespace Net.Pkcs11Interop.X509Store
 
                 ICkRsaPkcsOaepParams oaepMechanismParams = CreateCkRsaPkcsOaepParams(mechanismParamsFactory, padding);
                 if (oaepMechanismParams == null)
-                    throw new NotSupportedException(string.Format("Padding {0} is not supported", padding));
+                    throw new NotSupportedException($"Padding {padding} is not supported");
 
                 using (ISession session = _certContext.TokenContext.SlotContext.Slot.OpenSession(SessionType.ReadOnly))
                 using (IMechanism mechanism = session.Factories.MechanismFactory.Create(CKM.CKM_RSA_PKCS_OAEP, oaepMechanismParams))
@@ -219,7 +214,7 @@ namespace Net.Pkcs11Interop.X509Store
             }
             else
             {
-                throw new NotSupportedException(string.Format("Padding {0} is not supported", padding));
+                throw new NotSupportedException($"Padding {padding} is not supported");
             }
         }
 
@@ -229,7 +224,7 @@ namespace Net.Pkcs11Interop.X509Store
         /// <param name="data">The data to encrypt</param>
         /// <param name="padding">The padding mode</param>
         /// <returns>The encrypted data</returns>
-        public override byte[] Encrypt(byte[] data, RSAEncryptionPadding padding)
+        public override byte[] Encrypt([NotNull] byte[] data, [NotNull] RSAEncryptionPadding padding)
         {
             if (data == null || data.Length == 0)
                 throw new ArgumentNullException(nameof(data));
@@ -257,7 +252,7 @@ namespace Net.Pkcs11Interop.X509Store
 
                 ICkRsaPkcsOaepParams oaepMechanismParams = CreateCkRsaPkcsOaepParams(mechanismParamsFactory, padding);
                 if (oaepMechanismParams == null)
-                    throw new NotSupportedException(string.Format("Padding {0} is not supported", padding));
+                    throw new NotSupportedException($"Padding {padding} is not supported");
 
                 using (ISession session = _certContext.TokenContext.SlotContext.Slot.OpenSession(SessionType.ReadOnly))
                 using (IMechanism mechanism = session.Factories.MechanismFactory.Create(CKM.CKM_RSA_PKCS_OAEP, oaepMechanismParams))
@@ -267,7 +262,7 @@ namespace Net.Pkcs11Interop.X509Store
             }
             else
             {
-                throw new NotSupportedException(string.Format("Padding {0} is not supported", padding));
+                throw new NotSupportedException($"Padding {padding} is not supported");
             }
         }
 
@@ -301,7 +296,7 @@ namespace Net.Pkcs11Interop.X509Store
         /// <param name="count">The number of bytes to hash</param>
         /// <param name="hashAlgorithm">The algorithm to use in hash the data</param>
         /// <returns>The hashed data</returns>
-        protected override byte[] HashData(byte[] data, int offset, int count, HashAlgorithmName hashAlgorithm)
+        protected override byte[] HashData([NotNull] byte[] data, int offset, int count, HashAlgorithmName hashAlgorithm)
         {
             if (data == null || data.Length == 0)
                 throw new ArgumentNullException(nameof(data));
@@ -312,10 +307,7 @@ namespace Net.Pkcs11Interop.X509Store
             if (count < 1 || (offset + count) > data.Length)
                 throw new ArgumentException($"Invalid value of {nameof(count)} parameter");
 
-            if (hashAlgorithm == null)
-                throw new ArgumentNullException(nameof(hashAlgorithm));
-
-            using (var hashAlg = HashAlgorithm.Create(hashAlgorithm.Name))
+            using (var hashAlg = HashAlgorithmUtils.CreateHashAlgorithm(hashAlgorithm))
             {
                 return hashAlg.ComputeHash(data, offset, count);
             }
@@ -327,15 +319,12 @@ namespace Net.Pkcs11Interop.X509Store
         /// <param name="data">The binary stream to hash</param>
         /// <param name="hashAlgorithm">The hash algorithm</param>
         /// <returns>The hashed data</returns>
-        protected override byte[] HashData(Stream data, HashAlgorithmName hashAlgorithm)
+        protected override byte[] HashData([NotNull] Stream data, HashAlgorithmName hashAlgorithm)
         {
             if (data == null) // Note: data.Length might throw NotSupportedException
                 throw new ArgumentNullException(nameof(data));
 
-            if (hashAlgorithm == null)
-                throw new ArgumentNullException(nameof(hashAlgorithm));
-
-            using (var hashAlg = HashAlgorithm.Create(hashAlgorithm.Name))
+            using (var hashAlg = HashAlgorithmUtils.CreateHashAlgorithm(hashAlgorithm))
             {
                 return hashAlg.ComputeHash(data);
             }
@@ -377,42 +366,38 @@ namespace Net.Pkcs11Interop.X509Store
 
             byte[] pkcs1DigestInfo = null;
 
+
             if (hashAlgorithm == HashAlgorithmName.MD5)
             {
-                if (hash.Length != 16)
-                    throw new ArgumentException("Invalid lenght of hash value");
+                EnsureHashLength(hash, 16);
 
                 pkcs1DigestInfo = new byte[] { 0x30, 0x20, 0x30, 0x0C, 0x06, 0x08, 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x02, 0x05, 0x05, 0x00, 0x04, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
                 Array.Copy(hash, 0, pkcs1DigestInfo, pkcs1DigestInfo.Length - hash.Length, hash.Length);
             }
             else if (hashAlgorithm == HashAlgorithmName.SHA1)
             {
-                if (hash.Length != 20)
-                    throw new ArgumentException("Invalid lenght of hash value");
+                EnsureHashLength(hash, 20);
 
                 pkcs1DigestInfo = new byte[] { 0x30, 0x21, 0x30, 0x09, 0x06, 0x05, 0x2B, 0x0E, 0x03, 0x02, 0x1A, 0x05, 0x00, 0x04, 0x14, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
                 Array.Copy(hash, 0, pkcs1DigestInfo, pkcs1DigestInfo.Length - hash.Length, hash.Length);
             }
             else if (hashAlgorithm == HashAlgorithmName.SHA256)
             {
-                if (hash.Length != 32)
-                    throw new ArgumentException("Invalid lenght of hash value");
+                EnsureHashLength(hash, 32);
 
                 pkcs1DigestInfo = new byte[] { 0x30, 0x31, 0x30, 0x0D, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x01, 0x05, 0x00, 0x04, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
                 Array.Copy(hash, 0, pkcs1DigestInfo, pkcs1DigestInfo.Length - hash.Length, hash.Length);
             }
             else if (hashAlgorithm == HashAlgorithmName.SHA384)
             {
-                if (hash.Length != 48)
-                    throw new ArgumentException("Invalid lenght of hash value");
+                EnsureHashLength(hash, 48);
 
                 pkcs1DigestInfo = new byte[] { 0x30, 0x41, 0x30, 0x0D, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x02, 0x05, 0x00, 0x04, 0x30, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
                 Array.Copy(hash, 0, pkcs1DigestInfo, pkcs1DigestInfo.Length - hash.Length, hash.Length);
             }
             else if (hashAlgorithm == HashAlgorithmName.SHA512)
             {
-                if (hash.Length != 64)
-                    throw new ArgumentException("Invalid lenght of hash value");
+                EnsureHashLength(hash, 64);
 
                 pkcs1DigestInfo = new byte[] { 0x30, 0x51, 0x30, 0x0D, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x03, 0x05, 0x00, 0x04, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
                 Array.Copy(hash, 0, pkcs1DigestInfo, pkcs1DigestInfo.Length - hash.Length, hash.Length);
@@ -437,8 +422,7 @@ namespace Net.Pkcs11Interop.X509Store
 
             if (hashAlgorithm == HashAlgorithmName.SHA1)
             {
-                if (hash.Length != 20)
-                    throw new ArgumentException("Invalid lenght of hash value");
+                EnsureHashLength(hash, 20);
 
                 pssParams = mechanismParamsFactory.CreateCkRsaPkcsPssParams(
                     hashAlg: (ulong)CKM.CKM_SHA_1,
@@ -448,8 +432,7 @@ namespace Net.Pkcs11Interop.X509Store
             }
             else if (hashAlgorithm == HashAlgorithmName.SHA256)
             {
-                if (hash.Length != 32)
-                    throw new ArgumentException("Invalid lenght of hash value");
+                EnsureHashLength(hash, 32);
 
                 pssParams = mechanismParamsFactory.CreateCkRsaPkcsPssParams(
                     hashAlg: (ulong)CKM.CKM_SHA256,
@@ -459,8 +442,7 @@ namespace Net.Pkcs11Interop.X509Store
             }
             else if (hashAlgorithm == HashAlgorithmName.SHA384)
             {
-                if (hash.Length != 48)
-                    throw new ArgumentException("Invalid lenght of hash value");
+                EnsureHashLength(hash, 48);
 
                 pssParams = mechanismParamsFactory.CreateCkRsaPkcsPssParams(
                     hashAlg: (ulong)CKM.CKM_SHA384,
@@ -470,8 +452,7 @@ namespace Net.Pkcs11Interop.X509Store
             }
             else if (hashAlgorithm == HashAlgorithmName.SHA512)
             {
-                if (hash.Length != 64)
-                    throw new ArgumentException("Invalid lenght of hash value");
+                EnsureHashLength(hash, 64);
 
                 pssParams = mechanismParamsFactory.CreateCkRsaPkcsPssParams(
                     hashAlg: (ulong)CKM.CKM_SHA512,
@@ -531,6 +512,16 @@ namespace Net.Pkcs11Interop.X509Store
             }
 
             return oaepParams;
+        }
+
+        private static void EnsureHashLength(byte[] hash, int expectedLength)
+        {
+            // Error message for invalid hash length thrown by normal .NET RSA implementation
+            const string error =
+                "The provided hash value is not the expected size for the specified hash algorithm.";
+
+            if (hash.Length != expectedLength)
+                throw new CryptographicException(error);
         }
     }
 }

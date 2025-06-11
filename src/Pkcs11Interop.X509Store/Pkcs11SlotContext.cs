@@ -30,66 +30,19 @@ namespace Net.Pkcs11Interop.X509Store
     internal class Pkcs11SlotContext
     {
         /// <summary>
-        /// Flag indicating whether instance has been disposed
-        /// </summary>
-        private bool _disposed = false;
-
-        /// <summary>
         /// High level PKCS#11 slot
         /// </summary>
-        private ISlot _slot = null;
-
-        /// <summary>
-        /// High level PKCS#11 slot
-        /// </summary>
-        internal ISlot Slot
-        {
-            get
-            {
-                if (_disposed)
-                    throw new ObjectDisposedException(this.GetType().FullName);
-
-                return _slot;
-            }
-        }
+        internal ISlot Slot { get; }
 
         /// <summary>
         /// Detailed information about PKCS#11 slot
         /// </summary>
-        private Pkcs11SlotInfo _slotInfo = null;
-
-        /// <summary>
-        /// Detailed information about PKCS#11 slot
-        /// </summary>
-        internal Pkcs11SlotInfo SlotInfo
-        {
-            get
-            {
-                if (_disposed)
-                    throw new ObjectDisposedException(this.GetType().FullName);
-
-                return _slotInfo;
-            }
-        }
+        internal Pkcs11SlotInfo SlotInfo { get; }
 
         /// <summary>
         /// Internal context for Pkcs11X509Store class
         /// </summary>
-        private Pkcs11X509StoreContext _storeContext = null;
-
-        /// <summary>
-        /// Internal context for Pkcs11X509Store class
-        /// </summary>
-        internal Pkcs11X509StoreContext StoreContext
-        {
-            get
-            {
-                if (_disposed)
-                    throw new ObjectDisposedException(this.GetType().FullName);
-
-                return _storeContext;
-            }
-        }
+        internal Pkcs11X509StoreContext StoreContext { get; }
 
         /// <summary>
         /// Creates new instance of Pkcs11SlotContext class
@@ -99,9 +52,9 @@ namespace Net.Pkcs11Interop.X509Store
         /// <param name="storeContext">Internal context for Pkcs11X509Store class</param>
         internal Pkcs11SlotContext(ISlot slot, Pkcs11SlotInfo slotInfo, Pkcs11X509StoreContext storeContext)
         {
-            _slot = slot ?? throw new ArgumentNullException(nameof(slot));
-            _slotInfo = slotInfo ?? throw new ArgumentNullException(nameof(slotInfo));
-            _storeContext = storeContext ?? throw new ArgumentNullException(nameof(storeContext));
+            Slot = slot ?? throw new ArgumentNullException(nameof(slot));
+            SlotInfo = slotInfo ?? throw new ArgumentNullException(nameof(slotInfo));
+            StoreContext = storeContext ?? throw new ArgumentNullException(nameof(storeContext));
         }
     }
 }

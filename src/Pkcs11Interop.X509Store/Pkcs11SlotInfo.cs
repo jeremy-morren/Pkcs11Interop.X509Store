@@ -20,6 +20,7 @@
  */
 
 using System;
+using JetBrains.Annotations;
 using Net.Pkcs11Interop.HighLevelAPI;
 
 namespace Net.Pkcs11Interop.X509Store
@@ -27,39 +28,26 @@ namespace Net.Pkcs11Interop.X509Store
     /// <summary>
     /// Detailed information about PKCS#11 slot representing a logical reader that potentially contains a token
     /// </summary>
+    [PublicAPI]
     public class Pkcs11SlotInfo
     {
-        /// <summary>
-        /// Description of the slot
-        /// </summary>
-        private string _description = null;
+        /// <inheritdoc cref="ISlotInfo.SlotId"/>
+        public ulong SlotId { get; }
 
         /// <summary>
         /// Description of the slot
         /// </summary>
-        public string Description
-        {
-            get
-            {
-                return _description;
-            }
-        }
+        public string Description { get; }
 
         /// <summary>
         /// Manufacturer of the slot
         /// </summary>
-        private string _manufacturer = null;
+        public string Manufacturer { get; }
 
         /// <summary>
-        /// Manufacturer of the slot
+        /// Flags that provide capabilities of the slot
         /// </summary>
-        public string Manufacturer
-        {
-            get
-            {
-                return _manufacturer;
-            }
-        }
+        public ISlotFlags Flags { get; }
 
         /// <summary>
         /// Creates new instance of Pkcs11SlotInfo class
@@ -70,8 +58,10 @@ namespace Net.Pkcs11Interop.X509Store
             if (slotInfo == null)
                 throw new ArgumentNullException(nameof(slotInfo));
 
-            _description = slotInfo.SlotDescription;
-            _manufacturer = slotInfo.ManufacturerId;
+            SlotId = slotInfo.SlotId;
+            Description = slotInfo.SlotDescription;
+            Manufacturer = slotInfo.ManufacturerId;
+            Flags = slotInfo.SlotFlags;
         }
     }
 }

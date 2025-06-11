@@ -3,3 +3,10 @@
 .vs/
 /build/nuget-signed
 /build/nuget-unsigned
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates

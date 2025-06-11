@@ -20,6 +20,7 @@
  */
 
 using System;
+using JetBrains.Annotations;
 using Net.Pkcs11Interop.HighLevelAPI;
 
 namespace Net.Pkcs11Interop.X509Store
@@ -27,103 +28,33 @@ namespace Net.Pkcs11Interop.X509Store
     /// <summary>
     /// Detailed information about PKCS#11 token (cryptographic device) that is typically present in the slot
     /// </summary>
+    [PublicAPI]
     public class Pkcs11TokenInfo
     {
         /// <summary>
         /// Manufacturer of the token
         /// </summary>
-        private string _manufacturer = null;
-
-        /// <summary>
-        /// Manufacturer of the token
-        /// </summary>
-        public string Manufacturer
-        {
-            get
-            {
-                return _manufacturer;
-            }
-        }
+        public string Manufacturer { get; }
 
         /// <summary>
         /// Model of the token
         /// </summary>
-        private string _model = null;
-
-        /// <summary>
-        /// Model of the token
-        /// </summary>
-        public string Model
-        {
-            get
-            {
-                return _model;
-            }
-        }
+        public string Model { get; }
 
         /// <summary>
         /// Serial number of the token
         /// </summary>
-        private string _serialNumber = null;
-
-        /// <summary>
-        /// Serial number of the token
-        /// </summary>
-        public string SerialNumber
-        {
-            get
-            {
-                return _serialNumber;
-            }
-        }
+        public string SerialNumber { get; }
 
         /// <summary>
         /// Label of the token
         /// </summary>
-        private string _label = null;
+        public string Label { get; }
 
         /// <summary>
-        /// Label of the token
+        /// Bit flags indicating capabilities and status of the token
         /// </summary>
-        public string Label
-        {
-            get
-            {
-                return _label;
-            }
-        }
-
-        /// <summary>
-        /// Flag indicating whether token has a protected authentication path (e.g. pin pad) whereby a user can log into the token without passing a PIN through the API
-        /// </summary>
-        private bool _hasProtectedAuthenticationPath = false;
-
-        /// <summary>
-        /// Flag indicating whether token has a protected authentication path (e.g. pin pad) whereby a user can log into the token without passing a PIN through the API
-        /// </summary>
-        public bool HasProtectedAuthenticationPath
-        {
-            get
-            {
-                return _hasProtectedAuthenticationPath;
-            }
-        }
-
-        /// <summary>
-        /// Flag indicating whether token has been initialized and is usable
-        /// </summary>
-        private bool _initialized = false;
-
-        /// <summary>
-        /// Flag indicating whether token has been initialized and is usable
-        /// </summary>
-        public bool Initialized
-        {
-            get
-            {
-                return _initialized;
-            }
-        }
+        public ITokenFlags Flags { get; }
 
         /// <summary>
         /// Creates new instance of Pkcs11TokenInfo class
@@ -134,12 +65,26 @@ namespace Net.Pkcs11Interop.X509Store
             if (tokenInfo == null)
                 throw new ArgumentNullException(nameof(tokenInfo));
 
-            _manufacturer = tokenInfo.ManufacturerId;
-            _model = tokenInfo.Model;
-            _serialNumber = tokenInfo.SerialNumber;
-            _label = tokenInfo.Label;
-            _hasProtectedAuthenticationPath = tokenInfo.TokenFlags.ProtectedAuthenticationPath;
-            _initialized = tokenInfo.TokenFlags.TokenInitialized;
+            Manufacturer = tokenInfo.ManufacturerId;
+            Model = tokenInfo.Model;
+            SerialNumber = tokenInfo.SerialNumber;
+            Label = tokenInfo.Label;
+            Flags = new Pkcs11TokenFlags(tokenInfo.TokenFlags);
         }
+
+        #region Flags
+
+        /// <summary>
+        /// Flag indicating whether token has a protected authentication path (e.g. pin pad)
+        /// whereby a user can log into the token without passing a PIN through the API
+        /// </summary>
+        public bool HasProtectedAuthenticationPath => Flags.ProtectedAuthenticationPath;
+
+        /// <summary>
+        /// Flag indicating whether token has been initialized and is usable
+        /// </summary>
+        public bool Initialized => Flags.TokenInitialized;
+
+        #endregion
     }
 }

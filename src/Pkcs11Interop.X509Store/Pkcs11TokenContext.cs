@@ -37,7 +37,7 @@ namespace Net.Pkcs11Interop.X509Store
         /// <summary>
         /// Detailed information about PKCS#11 token (cryptographic device)
         /// </summary>
-        private Pkcs11TokenInfo _tokenInfo = null;
+        private readonly Pkcs11TokenInfo _tokenInfo = null;
 
         /// <summary>
         /// Detailed information about PKCS#11 token (cryptographic device)
@@ -75,7 +75,7 @@ namespace Net.Pkcs11Interop.X509Store
         /// <summary>
         /// Internal context for Pkcs11Slot class
         /// </summary>
-        private Pkcs11SlotContext _slotContext = null;
+        private readonly Pkcs11SlotContext _slotContext = null;
 
         /// <summary>
         /// Internal context for Pkcs11Slot class

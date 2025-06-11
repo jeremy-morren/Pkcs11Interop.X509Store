@@ -32,98 +32,32 @@ namespace Net.Pkcs11Interop.X509Store
         /// <summary>
         /// Detailed information about X.509 certificate stored on PKCS#11 token
         /// </summary>
-        private Pkcs11X509CertificateInfo _certificateInfo = null;
-
-        /// <summary>
-        /// Detailed information about X.509 certificate stored on PKCS#11 token
-        /// </summary>
-        internal Pkcs11X509CertificateInfo CertificateInfo
-        {
-            get
-            {
-                return _certificateInfo;
-            }
-        }
+        internal Pkcs11X509CertificateInfo CertificateInfo { get; }
 
         /// <summary>
         /// High level PKCS#11 object handle of certificate object
         /// </summary>
-        private IObjectHandle _certHandle = null;
-
-        /// <summary>
-        /// High level PKCS#11 object handle of certificate object
-        /// </summary>
-        internal IObjectHandle CertHandle
-        {
-            get
-            {
-                return _certHandle;
-            }
-        }
+        internal IObjectHandle CertHandle { get; }
 
         /// <summary>
         /// High level PKCS#11 object handle of private key object
         /// </summary>
-        private IObjectHandle _privKeyHandle = null;
-
-        /// <summary>
-        /// High level PKCS#11 object handle of private key object
-        /// </summary>
-        internal IObjectHandle PrivKeyHandle
-        {
-            get
-            {
-                return _privKeyHandle;
-            }
-        }
+        internal IObjectHandle PrivKeyHandle { get; }
 
         /// <summary>
         /// High level PKCS#11 object handle of public key object
         /// </summary>
-        private IObjectHandle _pubKeyHandle = null;
-
-        /// <summary>
-        /// High level PKCS#11 object handle of public key object
-        /// </summary>
-        internal IObjectHandle PubKeyHandle
-        {
-            get
-            {
-                return _pubKeyHandle;
-            }
-        }
+        internal IObjectHandle PubKeyHandle { get; }
 
         /// <summary>
         /// Flag indicating whether key usage requires context specific login to be performed
         /// </summary>
-        private bool _keyUsageRequiresLogin = false;
-
-        /// <summary>
-        /// Flag indicating whether key usage requires context specific login to be performed
-        /// </summary>
-        internal bool KeyUsageRequiresLogin
-        {
-            get
-            {
-                return _keyUsageRequiresLogin;
-            }
-        }
+        internal bool KeyUsageRequiresLogin { get; }
 
         /// <summary>
         /// Internal context for Pkcs11Token class
         /// </summary>
-        private Pkcs11TokenContext _tokenContext = null;
-
-        /// <summary>
-        /// Internal context for Pkcs11Token class
-        /// </summary>
-        internal Pkcs11TokenContext TokenContext
-        {
-            get
-            {
-                return _tokenContext;
-            }
-        }
+        internal Pkcs11TokenContext TokenContext { get; }
 
         /// <summary>
         /// Creates new instance of Pkcs11X509Certificate2Context class
@@ -136,12 +70,12 @@ namespace Net.Pkcs11Interop.X509Store
         /// <param name="tokenContext">Internal context for Pkcs11Token class</param>
         internal Pkcs11X509CertificateContext(Pkcs11X509CertificateInfo certificateInfo, IObjectHandle certHandle, IObjectHandle privKeyHandle, IObjectHandle pubKeyHandle, bool keyUsageRequiresLogin, Pkcs11TokenContext tokenContext)
         {
-            _certificateInfo = certificateInfo ?? throw new ArgumentNullException(nameof(certificateInfo));
-            _certHandle = certHandle ?? throw new ArgumentNullException(nameof(certHandle));
-            _privKeyHandle = privKeyHandle;
-            _pubKeyHandle = pubKeyHandle;
-            _keyUsageRequiresLogin = keyUsageRequiresLogin;
-            _tokenContext = tokenContext ?? throw new ArgumentNullException(nameof(tokenContext));
+            CertificateInfo = certificateInfo ?? throw new ArgumentNullException(nameof(certificateInfo));
+            CertHandle = certHandle ?? throw new ArgumentNullException(nameof(certHandle));
+            PrivKeyHandle = privKeyHandle;
+            PubKeyHandle = pubKeyHandle;
+            KeyUsageRequiresLogin = keyUsageRequiresLogin;
+            TokenContext = tokenContext ?? throw new ArgumentNullException(nameof(tokenContext));
         }
     }
 }
